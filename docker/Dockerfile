@@ -1,4 +1,4 @@
-ARG pg_version=12.0
+ARG pg_version=12.2
 
 FROM postgres:$pg_version as is_jsonb_valid_build
 
