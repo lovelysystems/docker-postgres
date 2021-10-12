@@ -27,7 +27,7 @@ services:
 
   # pgadmin listening on http://localhost:1080
   pgadmin:
-    image: dpage/pgadmin4:4.24
+    image: dpage/pgadmin4:6.0
     depends_on:
     - postgres
     secrets:
@@ -36,7 +36,7 @@ services:
       mode: 600
       target: /var/lib/pgadmin/storage/admin/pgpass
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
       PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
     # local storage for pgadmin
