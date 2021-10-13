@@ -4,6 +4,8 @@
 
 ### Feature
 
+TODO: wait on postgres bug #17227 to be fixed
+
 - upgraded to postgresql 14.0
 - added upgrade docker image variant to upgrade from 12.x versions
 - added debugger extension
