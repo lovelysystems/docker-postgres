@@ -1,0 +1,12 @@
+#!/bin/sh
+# compares the vanilla db schema of this docker image with the one of the
+# configured database server
+set -e
+
+echo dumping db from target server to /tmp/old_dump.sql ... >&2
+pg_dump $DIFFDB_DUMP_OPTIONS -f /tmp/old_dump.sql
+
+echo creating vanilla dump in /tmp/vanilla_dump.sql >&2
+create_vanilla_dump /tmp/vanilla_dump.sql > /tmp/vanilla_dump.log  2>&1
+
+exec apgdiff "$@" /tmp/old_dump.sql /tmp/vanilla_dump.sql

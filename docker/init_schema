@@ -1,0 +1,7 @@
+#!/bin/sh
+# initializes the vanilla schema against the configured database server
+set -e
+wait_for_postgres
+
+cd $SCHEMA_DIR/sql
+psql -f init.sql
