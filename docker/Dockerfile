@@ -14,7 +14,7 @@ RUN make clean install DESTDIR=/installation
 
 RUN cd /installation && tar -czvf /extensions.tgz .
 
-FROM base
+FROM base as server
 
 RUN apt-get update && apt-get install -y postgresql-12-pldebugger &&  apt-get clean
 
@@ -22,3 +22,33 @@ COPY --from=extension_builder /extensions.tgz /extensions.tgz
 
 RUN cd / && tar -zxvf extensions.tgz && rm extensions.tgz
 
+
+FROM server as client
+
+# get apgdiff tool to allow to diff the vanilla schema against target databases
+COPY --from=lovelysystems/apgdiff:dev-3-g3ddb090 /usr/local/bin/apgdiff /usr/local/bin/
+
+WORKDIR /app/
+COPY psqlrc /root/.psqlrc
+
+ENV PGHOST=${PGHOST:-127.0.0.1}
+ENV PGUSER=${PGUSER:-postgres}
+
+RUN chown -R postgres:postgres /app/
+
+COPY wait_for_postgres init_schema create_vanilla_dump diffdb /usr/local/bin/
+RUN cd /usr/local/bin/ && chmod 755 wait_for_postgres init_schema create_vanilla_dump diffdb
+
+# options to use with pg_dump, to dump the vanilla schema
+# the options to use for pg_dump, should be used to specify the database and optionally schemas
+ENV DIFFDB_DUMP_OPTIONS=${DIFFDB_DUMP_OPTIONS:-'-s -d postgres'}
+
+# the directory where the schema dir gets mounted. used by the init scripts
+ENV SCHEMA_DIR=/app/schema
+
+# override the entry point since we do not want to boostrap a server
+ENTRYPOINT []
+CMD ["psql"]
+
+
+FROM server
