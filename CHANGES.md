@@ -4,6 +4,7 @@
 
 ### Feature
 
+- added python support on server along with yaml and json schema libs
 - added client image with diff tool
 - added debugger extension
 

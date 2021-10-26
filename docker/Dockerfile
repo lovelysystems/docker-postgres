@@ -16,7 +16,7 @@ RUN cd /installation && tar -czvf /extensions.tgz .
 
 FROM base as server
 
-RUN apt-get update && apt-get install -y postgresql-12-pldebugger &&  apt-get clean
+RUN apt-get update && apt-get install -y postgresql-12-pldebugger python3-yaml python3-jsonschema postgresql-plpython3-12 &&  apt-get clean
 
 COPY --from=extension_builder /extensions.tgz /extensions.tgz
 
