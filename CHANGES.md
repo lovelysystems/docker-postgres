@@ -1,9 +1,10 @@
 # Changes for docker-postgres
 
-## unreleased
+## 2020-11-02 / 12.8.0
 
 ### Feature
 
+- base versions on postgres upstream version
 - upgrade to postgres 12.8
 - upgrade jsonschema and yaml python libs to most recent versions
 - added python support on server along with yaml and json schema libs

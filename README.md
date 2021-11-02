@@ -64,3 +64,7 @@ DIFFDB_DUMP_OPTIONS='-s -n gql -d app' diffdb
 The diff is generated using the [apgdiff tool](https://github.com/lovelysystems/apgdiff) and prints
 out the statements required to migrate the active db schema on the server to the vanilla schema.
 
+# Versioning
+
+The first 2 parts of the version are derived from the postgres version used. The 3rd part gets
+incremented upon changes in this repo.
