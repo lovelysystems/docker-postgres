@@ -1,13 +1,24 @@
-FROM postgres:12.2 as base
+FROM postgres:12.8 as base
+
+# postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
+# the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
+# if this version is not available anymore we need to use a different base image which btw might also change
+# the debian distribution
+ENV PG_APT_VERSION="12.8-1.pgdg110+1"
+ENV PLDEBUGGER_VERSION=1:1.4-1.pgdg110+1
 
 FROM base as extension_builder
-
 RUN apt-get update
-RUN apt-get install -y build-essential curl postgresql-server-dev-12
+RUN apt-get install -y build-essential curl postgresql-server-dev-12=$PG_APT_VERSION python3-pip && apt-get clean
+
+COPY requirements.txt /tmp/
+RUN mkdir /tmp/python-libs && \
+    pip3 install --target /tmp/python-libs --disable-pip-version-check --no-deps -r /tmp/requirements.txt && \
+    cd /tmp/python-libs && tar -czvf /python-libs.tgz . && \
+    rm -rf /tmp/python-libs
 
 RUN mkdir /is_jsonb_valid
 WORKDIR /is_jsonb_valid/
-
 RUN curl -L 'https://github.com/furstenheim/is_jsonb_valid/tarball/5b4ab770f4070b8166f0dda3afb3287042b1b744' \
     | tar -xz --strip-components=1
 RUN make clean install DESTDIR=/installation
@@ -16,12 +27,14 @@ RUN cd /installation && tar -czvf /extensions.tgz .
 
 FROM base as server
 
-RUN apt-get update && apt-get install -y postgresql-12-pldebugger python3-yaml python3-jsonschema postgresql-plpython3-12 &&  apt-get clean
+RUN apt-get update && apt-get install -y postgresql-12-pldebugger=$PLDEBUGGER_VERSION postgresql-plpython3-12=$PG_APT_VERSION && apt-get clean
+
+COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
+RUN cd /usr/lib/python3.9 && tar -zxvf /python-libs.tgz
 
 COPY --from=extension_builder /extensions.tgz /extensions.tgz
 
 RUN cd / && tar -zxvf extensions.tgz && rm extensions.tgz
-
 
 FROM server as client
 
