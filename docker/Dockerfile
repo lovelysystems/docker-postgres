@@ -38,8 +38,11 @@ RUN cd / && tar -zxvf extensions.tgz && rm extensions.tgz
 
 FROM server as client
 
+RUN apt-get update && apt-get install -y less && apt-get clean
+
 # get apgdiff tool to allow to diff the vanilla schema against target databases
-COPY --from=lovelysystems/apgdiff:dev-3-g3ddb090 /usr/local/bin/apgdiff /usr/local/bin/
+COPY --from=lovelysystems/apgdiff:0.0.1-8-g861723c /usr/local/bin/apgdiff /usr/local/bin/
+# COPY --from=lovelysystems/apgdiff:dev /usr/local/bin/apgdiff /usr/local/bin/
 
 WORKDIR /app/
 COPY psqlrc /root/.psqlrc
@@ -49,8 +52,9 @@ ENV PGUSER=${PGUSER:-postgres}
 
 RUN chown -R postgres:postgres /app/
 
-COPY wait_for_postgres init_schema create_vanilla_dump diffdb /usr/local/bin/
-RUN cd /usr/local/bin/ && chmod 755 wait_for_postgres init_schema create_vanilla_dump diffdb
+COPY ./lib/ /usr/local/lib/.
+COPY ./bin/ /usr/local/bin/.
+RUN chmod 755  /usr/local/bin/*
 
 # options to use with pg_dump, to dump the vanilla schema
 # the options to use for pg_dump, should be used to specify the database and optionally schemas

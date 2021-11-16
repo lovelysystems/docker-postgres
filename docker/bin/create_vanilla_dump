@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+# creates a vanilla dump to the given output file path
+# this script uses the docker-entrypoint script from the postgres image
+# the following is done:
+# - starts a postgres server in single-user mode
+# - runs the "$SCHEMA_DIR/sql/init.sql" script against that server
+# - dumps the schema using pg_dump to the file given as arguments
+set -e
+source /usr/local/lib/utils.sh
+
+display_usage() {
+	log "usage: dump_file [init_script]"
+}
+
+# if less than two arguments supplied, display usage
+if [  $# -lt 1 ]
+	then
+		display_usage
+		exit 1
+fi
+
+# check whether user had supplied -h or --help . If yes display usage
+if [[ ( $# == "--help") ||  $# == "-h" ]]
+then
+  display_usage
+  exit 0
+fi
+
+if [ -z "$1" ]
+  then
+    log "dump file option not provided"
+  else
+    dump_file="$1"
+fi
+
+
+if [ -z "$2" ]
+  then
+    init_script="$SCHEMA_DIR/sql/init.sql"
+  else
+    init_script="$2"
+fi
+
+if [ -f "$init_script" ]
+ then
+  log "using init script: $init_script"
+  else
+  log "init script $init_script not found"
+  exit 1
+fi
+
+export PGDATA="/tmp/vanilla_pgdata"
+rm -rf $PGDATA
+
+export PGHOST=''
+export POSTGRES_HOST_AUTH_METHOD=trust
+
+trap '{ log "cleaning up $PGDATA" && rm -rf -- "$PGDATA"; }' EXIT
+
+
+source /usr/local/bin/docker-entrypoint.sh
+docker_setup_env
+# setup data directories and permissions (when run as root)
+docker_create_db_directories
+
+log "running run_dump.sh using init_script=$init_script and dumpfile=$dump_file"
+
+exec gosu postgres /usr/local/bin/run_dump.sh $dump_file $init_script
