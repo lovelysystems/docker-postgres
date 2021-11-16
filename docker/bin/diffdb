@@ -1,0 +1,71 @@
+#!/bin/bash
+# compares the vanilla db schema of this docker image with the one of the
+# configured database server
+set -e
+source /usr/local/lib/utils.sh
+
+: "${DIFFDB_WORKDIR:=/tmp}"
+
+if [ ! -d "$DIFFDB_WORKDIR" ]
+then
+  log "working directory $DIFFDB_WORKDIR does not exist, exiting"
+  exit 1
+fi
+
+log "using $DIFFDB_WORKDIR as working directory"
+
+log dumping database schema from target server to $DIFFDB_WORKDIR/old_dump.sql ...
+pg_dump $DIFFDB_DUMP_OPTIONS -f $DIFFDB_WORKDIR/old_dump.sql
+log  dumping globals from target server to $DIFFDB_WORKDIR/old_globals.sql
+pg_dumpall -s --no-role-passwords --roles-only --clean --if-exists --file="$DIFFDB_WORKDIR/old_globals.sql"
+
+log "creating vanilla dump"
+create_vanilla_dump $DIFFDB_WORKDIR/vanilla_dump1.sql > $DIFFDB_WORKDIR/vanilla_dump1.log
+
+log "running first diff"
+apgdiff --drop-cascade --out-file $DIFFDB_WORKDIR/diff1.sql $DIFFDB_WORKDIR/old_dump.sql $DIFFDB_WORKDIR/vanilla_dump1.sql
+
+log "concatenating diffs"
+echo "-- GLOBALS $DIFFDB_WORKDIR/old_globals.sql -----------------" > $DIFFDB_WORKDIR/init2.sql
+# we do not want to drop / create the postgres user so remove the according lines from the globals
+egrep -v '^(CREATE|DROP) ROLE.* postgres;' $DIFFDB_WORKDIR/old_globals.sql >> $DIFFDB_WORKDIR/init2.sql
+
+echo "-- DB DUMP $DIFFDB_WORKDIR/old_dump.sql -----------------" >> $DIFFDB_WORKDIR/init2.sql
+cat $DIFFDB_WORKDIR/old_dump.sql >> $DIFFDB_WORKDIR/init2.sql
+
+echo "-- DIFF $DIFFDB_WORKDIR/diff1.sql -----------------" >> $DIFFDB_WORKDIR/init2.sql
+cat $DIFFDB_WORKDIR/diff1.sql >> $DIFFDB_WORKDIR/init2.sql
+
+log "creating dump of old plus applied diff1"
+create_vanilla_dump $DIFFDB_WORKDIR/old_dump2.sql $DIFFDB_WORKDIR/init2.sql > $DIFFDB_WORKDIR/old_dump2.log
+
+log "creating second phase diff"
+apgdiff --out-file $DIFFDB_WORKDIR/diff2.sql $DIFFDB_WORKDIR/old_dump2.sql $DIFFDB_WORKDIR/vanilla_dump1.sql
+
+log "writing final diff to $DIFFDB_WORKDIR/fulldiff.sql"
+
+cat << DIFFHEAD > $DIFFDB_WORKDIR/fulldiff.sql
+-- DIFF HEADER
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+BEGIN;
+DIFFHEAD
+
+echo "-- PHASE 1 DIFF START $DIFFDB_WORKDIR/diff1.sql ------------------------------" >> $DIFFDB_WORKDIR/fulldiff.sql
+cat $DIFFDB_WORKDIR/diff1.sql >> $DIFFDB_WORKDIR/fulldiff.sql
+echo "-- PHASE 1 DIFF END   ------------------------------" >> $DIFFDB_WORKDIR/fulldiff.sql
+echo "-- PHASE 2 DIFF START $DIFFDB_WORKDIR/diff2.sql ------------------------------" >> $DIFFDB_WORKDIR/fulldiff.sql
+cat $DIFFDB_WORKDIR/diff2.sql >> $DIFFDB_WORKDIR/fulldiff.sql
+echo "-- PHASE 2 DIFF END   ------------------------------" >> $DIFFDB_WORKDIR/fulldiff.sql
+echo "ABORT;" >> $DIFFDB_WORKDIR/fulldiff.sql
+
+

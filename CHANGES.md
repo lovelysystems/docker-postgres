@@ -1,5 +1,12 @@
 # Changes for docker-postgres
 
+## unreleased
+
+### Feature
+
+- client: diffdb now does a 2-phase diff to allow cascading deletes and also validate the generated
+  diff
+
 ## 2020-11-02 / 12.8.0
 
 ### Feature
