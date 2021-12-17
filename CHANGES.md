@@ -1,6 +1,6 @@
 # Changes for docker-postgres
 
-## unreleased
+## 2021-12-17 / 12.9.0
 
 ### Feature
 
@@ -15,7 +15,7 @@
   https://github.com/lovelysystems/lovely-db-commons/tree/master/src/main/sql/microschema 
 
 
-## 2020-11-02 / 12.8.0
+## 2021-11-02 / 12.8.0
 
 ### Feature
 
