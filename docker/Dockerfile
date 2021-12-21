@@ -1,14 +1,14 @@
-FROM postgres:12.9 as base
+FROM postgres:14.1 as base
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="12.9-1.pgdg110+1"
+ENV PG_APT_VERSION="14.1-1.pgdg110+1"
 
 FROM base as extension_builder
 RUN apt-get update
-RUN apt-get install -y build-essential curl python3-pip && apt-get clean
+RUN apt-get install -y --no-install-recommends build-essential curl python3-pip && apt-get clean
 
 COPY requirements.txt /tmp/
 RUN mkdir /tmp/python-libs && \
@@ -18,14 +18,14 @@ RUN mkdir /tmp/python-libs && \
 
 FROM base as server
 
-RUN apt-get update && apt-get install -y postgresql-12-pldebugger postgresql-plpython3-12=$PG_APT_VERSION && apt-get clean
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-14-pldebugger postgresql-plpython3-14=$PG_APT_VERSION && apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
 RUN cd /usr/lib/python3.9 && tar -zxvf /python-libs.tgz
 
 FROM server as client
 
-RUN apt-get update && apt-get install -y less && apt-get clean
+RUN apt-get update && apt-get install -y --no-install-recommends less && apt-get clean
 
 # get apgdiff tool to allow to diff the vanilla schema against target databases
 COPY --from=lovelysystems/apgdiff:0.0.2 /usr/local/bin/apgdiff /usr/local/bin/
@@ -53,5 +53,32 @@ ENV SCHEMA_DIR=/app/schema
 ENTRYPOINT []
 CMD ["psql"]
 
+# Stage to upgrade to this version from 12.x releases
+# taken from https://github.com/tianon/docker-postgres-upgrade/blob/master/12-to-14/Dockerfile
+FROM server as upgrade12
+RUN sed -i 's/$/ 12/' /etc/apt/sources.list.d/pgdg.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		postgresql-12=12.9-1.pgdg110+1 \
+	&& rm -rf /var/lib/apt/lists/*
+
+ENV PGBINOLD /usr/lib/postgresql/12/bin
+ENV PGBINNEW /usr/lib/postgresql/14/bin
+
+ENV PGDATAOLD /var/lib/postgresql/12/data
+ENV PGDATANEW /var/lib/postgresql/14/data
+
+RUN mkdir -p "$PGDATAOLD" "$PGDATANEW" \
+	&& chown -R postgres:postgres /var/lib/postgresql
+
+WORKDIR /var/lib/postgresql
+
+#COPY --from=tianon/postgres-upgrade:12-to-14 /usr/local/bin/docker-upgrade /usr/local/bin/
+COPY --chmod=755 docker-upgrade /usr/local/bin/
+
+
+ENTRYPOINT ["docker-upgrade"]
+
+CMD ["pg_upgrade"]
 
 FROM server

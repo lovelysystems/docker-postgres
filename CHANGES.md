@@ -1,5 +1,13 @@
 # Changes for docker-postgres
 
+## unreleased
+
+### Feature
+
+- upgraded to postgres 14.1
+- made `wait_for_postgres` less verbose
+- added `upgrade12` docker image to allow upgrading data directories from 12 to 14
+
 ## 2021-12-17 / 12.9.0
 
 ### Feature

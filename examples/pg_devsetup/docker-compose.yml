@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.9'
 
 secrets:
   pgpass:
@@ -45,3 +45,12 @@ services:
       - ./servers.json:/pgadmin4/servers.json:ro
     ports:
       - "1080:80"
+
+  client:
+    image: lovelysystems/docker-postgres:dev-client
+    profiles:
+      - manual
+    environment:
+      PGHOST: postgres
+      PGUSER: postgres
+      PGPASSWORD: postgres

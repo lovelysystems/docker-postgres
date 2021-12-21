@@ -1,7 +1,13 @@
 #!/bin/sh
 set -e
-echo "watiing for postgres connection ..."
-while ! psql -c 'select 1' >> /dev/null; do
+
+first=1
+until pg_isready -q
+do
+  if [ $first = 1 ]; then
+    echo "waiting for postgres connection ..."
+    first=0
+  fi
   sleep 0.3
 done
 echo "successfully connected to postgres"
