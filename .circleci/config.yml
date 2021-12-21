@@ -1,0 +1,13 @@
+version: 2.1
+jobs:
+  test:
+    machine:
+      image: ubuntu-2004:202111-01
+    steps:
+      - checkout
+      - run:
+          command: ./gradlew check
+workflows:
+  test:
+    jobs:
+      - test
