@@ -75,3 +75,11 @@ out the statements required to migrate the active db schema on the server to the
 
 The first 2 parts of the version are derived from the postgres version used. The 3rd part gets
 incremented upon changes in this repo.
+
+# Testing
+
+To run all tests do:
+
+```shell
+./gradlew check
+```

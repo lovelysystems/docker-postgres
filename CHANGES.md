@@ -8,6 +8,15 @@
 - made `wait_for_postgres` less verbose
 - added `upgrade12` docker image to allow upgrading data directories from 12 to 14
 
+### Breaking
+
+- upgrade to 14 requires either a dump/restore or the
+  [described update procedure](./examples/upgrading/upgrade_procedure.sh)
+
+### Develop
+
+- added tests and circleci setup
+
 ## 2021-12-17 / 12.9.0
 
 ### Feature
