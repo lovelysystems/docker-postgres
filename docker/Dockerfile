@@ -73,9 +73,8 @@ RUN mkdir -p "$PGDATAOLD" "$PGDATANEW" \
 
 WORKDIR /var/lib/postgresql
 
-#COPY --from=tianon/postgres-upgrade:12-to-14 /usr/local/bin/docker-upgrade /usr/local/bin/
-COPY --chmod=755 docker-upgrade /usr/local/bin/
-
+COPY docker-upgrade /usr/local/bin/
+RUN chmod 755 /usr/local/bin/docker-upgrade
 
 ENTRYPOINT ["docker-upgrade"]
 
