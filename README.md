@@ -27,6 +27,13 @@ deployed on postgres servers via psql.
 
 Configuring the target database can be done via the known postgres environment variables.
 
+# Image for Upgrading
+
+The `upgrade12` image can be used to upgrade data directories from version 12 to the current version.
+It is based on https://github.com/tianon/docker-postgres-upgrade/.
+
+See the [upgrade example](./examples/upgrading) for more information
+
 ## Schema location
 
 Put sql files under `/app/schema/sql`, the init script runs `/app/schema/sql/init.sql`
@@ -68,3 +75,11 @@ out the statements required to migrate the active db schema on the server to the
 
 The first 2 parts of the version are derived from the postgres version used. The 3rd part gets
 incremented upon changes in this repo.
+
+# Testing
+
+To run all tests do:
+
+```shell
+./gradlew check
+```
