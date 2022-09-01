@@ -4,7 +4,7 @@ FROM postgres:14.1 as base
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="14.1-1.pgdg110+1"
+ENV PG_APT_VERSION="14.5-1.pgdg110+1"
 
 FROM base as extension_builder
 RUN apt-get update
@@ -18,10 +18,29 @@ RUN mkdir /tmp/python-libs && \
 
 FROM base as server
 
-RUN apt-get update && apt-get install -y --no-install-recommends postgresql-14-pldebugger postgresql-plpython3-14=$PG_APT_VERSION && apt-get clean
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    postgresql-14-pldebugger postgresql-plpython3-14=$PG_APT_VERSION && \
+    apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
 RUN cd /usr/lib/python3.9 && tar -zxvf /python-libs.tgz
+RUN echo "host replication replication all scram-sha-256" >> /usr/share/postgresql/14/pg_hba.conf.sample
+
+FROM server as backup
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    barman barman-cli barman-cli-cloud && \
+    apt-get clean
+
+COPY psqlrc /root/.psqlrc
+
+ENV PGHOST=${PGHOST:-127.0.0.1}
+ENV PGUSER=${PGUSER:-postgres}
+
+# do not boostrap a server
+ENTRYPOINT []
+CMD ["barman", "-v"]
 
 FROM server as client
 
@@ -59,7 +78,7 @@ FROM server as upgrade12
 RUN sed -i 's/$/ 12/' /etc/apt/sources.list.d/pgdg.list
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-		postgresql-12=12.9-1.pgdg110+1 \
+		postgresql-12=12.12-1.pgdg110+1 \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV PGBINOLD /usr/lib/postgresql/12/bin

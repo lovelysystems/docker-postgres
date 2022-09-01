@@ -4,7 +4,7 @@ plugins {
 
 lovely {
     gitProject()
-    dockerProject("lovelysystems/docker-postgres", stages = listOf("", "client", "upgrade12"))
+    dockerProject("lovelysystems/docker-postgres", stages = listOf("", "backup", "client", "upgrade12"))
     with(dockerFiles) {
         from("docker")
     }
