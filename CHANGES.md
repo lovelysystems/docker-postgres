@@ -1,5 +1,13 @@
 # Changes for docker-postgres
 
+## Unreleased
+
+### Feature
+
+- upgraded postgres-plpython to version 14.5.1
+- add `pg_hba` rule that allows users with role `replication` to use the PG streaming protocol.
+- added `backup` docker image to allow disaster recovery using [Barman](https://pgbarman.org/). 
+
 ## 2021-12-27 / 14.1.0
 
 ### Feature

@@ -1,0 +1,70 @@
+version: '3.9'
+
+secrets:
+  barman.conf:
+    file: ./barman.conf
+  pgpass:
+    file: ./pgpass
+  pg.conf:
+    file: ./pg.conf
+
+services:
+
+  postgres:
+    image: lovelysystems/docker-postgres:dev
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      # bind mount the data volume
+      - "./volumes/postgres/data:/var/lib/postgresql/data"
+
+      # bind mount the restore volume
+      # uncomment fore restore
+      #- "./volumes/pg_restore/data:/var/lib/postgresql/data"
+
+      # map the bootstrap file into the init folder
+      # this will be evaluated in the created database upon first startup
+      - "./bootstrap.sql:/docker-entrypoint-initdb.d/bootstrap.sql"
+    command:
+      - '-c'
+      - 'max_wal_senders=2'
+      - '-c'
+      - 'max_replication_slots=2'
+      - '-c'
+      - 'archive_timeout=60'
+
+  backup:
+    image: lovelysystems/docker-postgres:dev-backup
+    profiles:
+      - manual
+    secrets:
+      - source: pgpass
+        target: /root/.pgpass
+      - source: barman.conf
+        target: /etc/barman.conf
+      - source: pg.conf
+        target: /etc/barman.d/pg.conf
+    volumes:
+      # bind mount the restore volume
+      - "./volumes/pg_restore/data:/var/lib/postgresql/data"
+      - "./volumes/barman:/var/lib/barman"
+    environment:
+      PGHOST: postgres
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+
+
+  minio:
+    image: minio/minio:RELEASE.2022-09-01T23-53-36Z
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./volumes/minio:/data
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ACCESS_KEY: "minioadmin"
+      MINIO_SECRET_KEY: "minioadmin"
+      MINIO_DOMAIN: "minio:9000"
