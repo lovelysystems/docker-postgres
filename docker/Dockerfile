@@ -30,7 +30,7 @@ FROM server as backup
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    barman barman-cli barman-cli-cloud && \
+    cron barman barman-cli barman-cli-cloud && \
     apt-get clean
 
 COPY psqlrc /root/.psqlrc
