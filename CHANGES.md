@@ -1,5 +1,11 @@
 # Changes for docker-postgres
 
+## Unreleased
+
+### Feature
+
+- Add `cron` to backup image
+
 ## 2022-09-07 / 14.1.1
 
 ### Feature
