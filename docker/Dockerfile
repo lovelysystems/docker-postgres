@@ -27,17 +27,17 @@ RUN cd /usr/lib/python3.9 && tar -zxvf /python-libs.tgz
 RUN echo "host replication replication all scram-sha-256" >> /usr/share/postgresql/14/pg_hba.conf.sample
 
 FROM server as backup
+COPY --from=lovelysystems/adminbox:0.4.2 /usr/bin/notify_if_fails /usr/bin/slack /usr/bin/
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    cron barman barman-cli barman-cli-cloud && \
+    cron jq curl barman barman-cli barman-cli-cloud && \
     apt-get clean
 
 COPY psqlrc /root/.psqlrc
 
 ENV PGHOST=${PGHOST:-127.0.0.1} \
-    PGUSER=${PGUSER:-postgres} \
-    BARMAN_BACKUP_SCHEDULE="0 4 * * *"
+    PGUSER=${PGUSER:-postgres}
 
 WORKDIR /var/lib/barman
 COPY entrypoint.sh /
