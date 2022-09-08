@@ -4,6 +4,8 @@
 
 ### Feature
 
+- update postgres to version 14.5
+- allow to define barman backup schedule via environment variable
 - Add `cron` to backup image
 
 ## 2022-09-07 / 14.1.1

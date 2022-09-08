@@ -1,4 +1,4 @@
-FROM postgres:14.1 as base
+FROM postgres:14.5 as base
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
@@ -35,12 +35,14 @@ RUN apt-get update && \
 
 COPY psqlrc /root/.psqlrc
 
-ENV PGHOST=${PGHOST:-127.0.0.1}
-ENV PGUSER=${PGUSER:-postgres}
+ENV PGHOST=${PGHOST:-127.0.0.1} \
+    PGUSER=${PGUSER:-postgres} \
+    BARMAN_BACKUP_SCHEDULE="0 4 * * *"
 
-# do not boostrap a server
-ENTRYPOINT []
-CMD ["barman", "-v"]
+WORKDIR /var/lib/barman
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["cron", "-f"]
 
 FROM server as client
 
