@@ -54,7 +54,9 @@ services:
       PGHOST: postgres
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
-
+      BARMAN_BACKUP_SCHEDULE: 0 4 * * *
+      NOTIFY_BACKUP_ERROR_MESSAGE: "Testproject: Backup failed"
+      SLACK_CLI_TOKEN: "TOKEN"  # required to send alerts via slack
 
   minio:
     image: minio/minio:RELEASE.2022-09-01T23-53-36Z
