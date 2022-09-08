@@ -1,6 +1,6 @@
 # Changes for docker-postgres
 
-## Unreleased
+## 2022-09-08 / 14.5.1
 
 - allow to configure slack notification if barman backup fails
 
