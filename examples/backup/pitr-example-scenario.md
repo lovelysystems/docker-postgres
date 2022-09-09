@@ -1,6 +1,13 @@
-# Incremental Backups
+# Point-in-Time (PIT) Disaster Recovery Scenario
 
-## Requires: BARMAN all green
+This case describes a example scenario for disaster recovery. The scenario is based on the following
+assumptions:
+
+## Requires
+
+- Barman is configured and running
+- Postgres is configured and running
+- The database is in a consistent state
 
 ```shell
 $ barman cron
@@ -78,7 +85,7 @@ $ barman cron
 $ docker-compose stop postgres
 ```
 
-6. Point-inTime Recovery (PITR)
+6. Point-in-Time Recovery (PITR)
 
 At the end of the execution of the recovery, the selected backup is recovered locally and the destination path contains
 a data directory ready to be used to start a PostgreSQL instance.
