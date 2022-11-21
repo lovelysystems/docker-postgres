@@ -1,10 +1,10 @@
-FROM postgres:14.5 as base
+FROM postgres:14.6 as base
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="14.5-1.pgdg110+1"
+ENV PG_APT_VERSION="14.6-1.pgdg110+1"
 
 FROM base as extension_builder
 RUN apt-get update
@@ -19,7 +19,7 @@ RUN mkdir /tmp/python-libs && \
 FROM base as server
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-14-pldebugger postgresql-plpython3-14=$PG_APT_VERSION && \
+    postgresql-14-pldebugger postgresql-plpython3-14=$PG_APT_VERSION barman-cli-cloud && \
     apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
@@ -31,7 +31,7 @@ COPY --from=lovelysystems/adminbox:0.4.2 /usr/bin/notify_if_fails /usr/bin/slack
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    cron jq curl barman barman-cli barman-cli-cloud && \
+    cron jq curl barman barman-cli && \
     apt-get clean
 
 COPY psqlrc /root/.psqlrc
@@ -80,7 +80,7 @@ FROM server as upgrade12
 RUN sed -i 's/$/ 12/' /etc/apt/sources.list.d/pgdg.list
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-		postgresql-12=12.12-1.pgdg110+1 \
+		postgresql-12=12.13-1.pgdg110+1 \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV PGBINOLD /usr/lib/postgresql/12/bin

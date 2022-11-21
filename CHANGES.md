@@ -1,5 +1,10 @@
 # Changes for docker-postgres
 
+## Unreleased
+
+- update postgres to version 14.6
+- include barman cloud client in server image
+
 ## 2022-09-08 / 14.5.2
 
 ### Feature
