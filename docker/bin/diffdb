@@ -23,7 +23,7 @@ log "creating vanilla dump"
 create_vanilla_dump $DIFFDB_WORKDIR/vanilla_dump1.sql > $DIFFDB_WORKDIR/vanilla_dump1.log
 
 log "running first diff"
-apgdiff --drop-cascade --out-file $DIFFDB_WORKDIR/diff1.sql $DIFFDB_WORKDIR/old_dump.sql $DIFFDB_WORKDIR/vanilla_dump1.sql
+apgdiff $DIFFDB_APGDIFF_OPTIONS --drop-cascade --out-file $DIFFDB_WORKDIR/diff1.sql $DIFFDB_WORKDIR/old_dump.sql $DIFFDB_WORKDIR/vanilla_dump1.sql
 
 log "concatenating diffs"
 echo "-- GLOBALS $DIFFDB_WORKDIR/old_globals.sql -----------------" > $DIFFDB_WORKDIR/init2.sql
@@ -40,7 +40,7 @@ log "creating dump of old plus applied diff1"
 create_vanilla_dump $DIFFDB_WORKDIR/old_dump2.sql $DIFFDB_WORKDIR/init2.sql > $DIFFDB_WORKDIR/old_dump2.log
 
 log "creating second phase diff"
-apgdiff --out-file $DIFFDB_WORKDIR/diff2.sql $DIFFDB_WORKDIR/old_dump2.sql $DIFFDB_WORKDIR/vanilla_dump1.sql
+apgdiff $DIFFDB_APGDIFF_OPTIONS --out-file $DIFFDB_WORKDIR/diff2.sql $DIFFDB_WORKDIR/old_dump2.sql $DIFFDB_WORKDIR/vanilla_dump1.sql
 
 log "writing final diff to $DIFFDB_WORKDIR/fulldiff.sql"
 
