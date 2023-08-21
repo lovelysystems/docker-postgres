@@ -1,5 +1,13 @@
 # Changes for docker-postgres
 
+## Unreleased
+
+### Feature
+
+- update Postgres to version 14.9
+- update `com.lovelysystems.gradle` to version 1.11.5
+- enable passing custom options to apgdiff via `DIFFDB_APGDIFF_OPTIONS` env. var.
+
 ## 2023-01-11 / 14.6.0
 
 - update postgres to version 14.6
