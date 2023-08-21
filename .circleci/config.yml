@@ -6,6 +6,14 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Bootstrap Gradle
+          command: ./gradlew --version
+      - run:
+          name: Prepare docker container builder
+          # ignore failures since builder could exist already (cache)
+          command: ./gradlew prepareDockerContainerBuilder || true
+      - run:
+          name: Check
           command: ./gradlew check
 workflows:
   test:
