@@ -4,8 +4,8 @@ FROM postgres:12.8 as base
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="12.8-1.pgdg110+1"
-ENV PLDEBUGGER_VERSION=1:1.4-1.pgdg110+1
+ENV PG_APT_VERSION="12.17-1.pgdg110+1"
+ENV PLDEBUGGER_VERSION=1:1.5-2.pgdg110+1
 
 FROM base as extension_builder
 RUN apt-get update
