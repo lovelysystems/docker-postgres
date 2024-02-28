@@ -4,6 +4,7 @@
 
 ### Develop
 
+- upgrade gradle wrapper to version 8.6
 - upgraded gradle plugin to fix docker push task
 
 ## 2023-08-23 / 14.9.0
