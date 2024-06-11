@@ -5,7 +5,7 @@
 ## Feature
 
 - updated postgres to version 16.3
-- added `upgrade12to16` docker image to allow upgrading data directories from 12 to 16
+- added `upgrade12to16` stage to allow upgrading data directories from postgres version 12 to 16
 
 ### Develop
 
