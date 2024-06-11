@@ -80,8 +80,10 @@ FROM server as upgrade12to16
 RUN sed -i 's/$/ 12/' /etc/apt/sources.list.d/pgdg.list
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-		postgresql-12=12.16-1.pgdg110+1 \
+		postgresql-12 \
 	&& rm -rf /var/lib/apt/lists/*
+
+	# TODO use nailed version
 
 ENV PGBINOLD /usr/lib/postgresql/12/bin
 ENV PGBINNEW /usr/lib/postgresql/16/bin

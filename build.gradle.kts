@@ -6,7 +6,7 @@ lovely {
     gitProject()
     dockerProject(
         "lovelysystems/docker-postgres",
-        stages = listOf("", "backup", "client", "upgrade12"),
+        stages = listOf("", "backup", "client", "upgrade12to16"),
         // note that the platform is nailed as AMD64 here, because M1 Macs would generate ARM64 images by default, but,
         // when ARM64 is used, `diffdb` bumps into the following error when it runs the `apgdiff` command:
         // "qemu-x86_64: Could not open '/lib64/ld-linux-x86-64.so.2': No such file or directory"
