@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-# based on https://github.com/tianon/docker-postgres-upgrade/blob/master/12-to-14/docker-upgrade
+# based on https://github.com/tianon/docker-postgres-upgrade/blob/master/12-to-16/docker-upgrade
 
 
 if [ "$#" -eq 0 -o "${1:0:1}" = '-' ]; then
