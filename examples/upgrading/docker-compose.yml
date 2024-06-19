@@ -21,7 +21,7 @@ services:
       PGPASSWORD: postgres
 
   upgrade:
-    image: lovelysystems/docker-postgres:dev-upgrade12
+    image: lovelysystems/docker-postgres:dev-upgrade12to16
     stop_grace_period: 120s
     profiles:
       - manual
@@ -29,7 +29,7 @@ services:
       - "./data/12:/var/lib/postgresql/12/data"
       - "./data/14:/var/lib/postgresql/14/data"
 
-  pg14:
+  pg16:
     image: lovelysystems/docker-postgres:dev
     stop_grace_period: 120s
     profiles:
@@ -37,6 +37,6 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
     volumes:
-      - "./data/14:/var/lib/postgresql/data"
+      - "./data/16:/var/lib/postgresql/data"
 
 

@@ -21,15 +21,15 @@ docker-compose stop pg12
 docker-compose run --rm upgrade
 
 # start the new server
-docker-compose up -d pg14
+docker-compose up -d pg16
 
 # wait for the new db server to start
-docker-compose run --rm -e PGHOST=pg14 client wait_for_postgres
+docker-compose run --rm -e PGHOST=pg16 client wait_for_postgres
 
 # vacuum the new database
-docker-compose run --rm -e PGHOST=pg14 client vacuumdb --all --analyze-in-stages
+docker-compose run --rm -e PGHOST=pg16 client vacuumdb --all --analyze-in-stages
 
 # print version
-docker-compose run --rm -e PGHOST=pg14 client psql -c 'SHOW server_version;'
+docker-compose run --rm -e PGHOST=pg16 client psql -c 'SHOW server_version;'
 
-docker-compose stop pg14
+docker-compose stop pg16

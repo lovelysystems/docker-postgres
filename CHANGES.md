@@ -2,6 +2,11 @@
 
 ## unreleased
 
+## Feature
+
+- updated postgres to version 16.3
+- added `upgrade12to16` stage to allow upgrading data directories from postgres version 12 to 16
+
 ### Develop
 
 - upgrade gradle wrapper to version 8.6
