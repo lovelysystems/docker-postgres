@@ -1,6 +1,6 @@
 # Changes for docker-postgres
 
-## unreleased
+## 2024-06-19 / 16.3.0
 
 ## Feature
 
