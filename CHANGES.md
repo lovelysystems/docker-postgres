@@ -1,5 +1,9 @@
 # Changes for docker-postgres
 
+## 2024-06-24 / 16.3.1
+
+- bump apgdiff to 1.0.1 to make multiplatform builds work
+
 ## 2024-06-19 / 16.3.0
 
 ## Feature
@@ -97,4 +101,3 @@
 ## 2020-04-29 / 0.1.0
 
 - Initial Release using Postgresql 12.2
-

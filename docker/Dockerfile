@@ -49,8 +49,7 @@ FROM server as client
 RUN apt-get update && apt-get install -y --no-install-recommends less && apt-get clean
 
 # get apgdiff tool to allow to diff the vanilla schema against target databases
-# TODO use fixed version, argument handling is broken in 1.0.0
-COPY --from=lovelysystems/apgdiff:1.0.0 /usr/local/bin/apgdiff /usr/local/bin/
+COPY --from=lovelysystems/apgdiff:1.0.1 /usr/local/bin/apgdiff /usr/local/bin/
 
 WORKDIR /app/
 COPY psqlrc /root/.psqlrc
