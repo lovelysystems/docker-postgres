@@ -19,7 +19,7 @@ RUN mkdir /tmp/python-libs && \
 FROM base as server
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-16-pldebugger postgresql-plpython3-16=$PG_APT_VERSION barman-cli-cloud && \
+    postgresql-16-pldebugger postgresql-plpython3-16 barman-cli-cloud && \
     apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
