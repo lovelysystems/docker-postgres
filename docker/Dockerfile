@@ -19,7 +19,7 @@ RUN mkdir /tmp/python-libs && \
 FROM base as server
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-16-pldebugger postgresql-plpython3-16=$PG_APT_VERSION barman-cli-cloud && \
+    postgresql-16-pldebugger postgresql-plpython3-16 barman-cli-cloud && \
     apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
@@ -80,7 +80,7 @@ FROM server as upgrade12to16
 RUN sed -i 's/$/ 12/' /etc/apt/sources.list.d/pgdg.list
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-		postgresql-12=12.20-1.pgdg120+1 \
+		postgresql-12 \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV PGBINOLD /usr/lib/postgresql/12/bin
