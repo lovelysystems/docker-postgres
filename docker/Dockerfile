@@ -4,7 +4,7 @@ FROM postgres:16.3-bullseye as base
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="16.3-1.pgdg110+1"
+ENV PG_APT_VERSION="16.4-1.pgdg120+1"
 
 FROM base as extension_builder
 RUN apt-get update
@@ -19,7 +19,7 @@ RUN mkdir /tmp/python-libs && \
 FROM base as server
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-16-pldebugger postgresql-plpython3-16 barman-cli-cloud && \
+    postgresql-16-pldebugger postgresql-plpython3-16=$PG_APT_VERSION barman-cli-cloud && \
     apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
@@ -80,7 +80,7 @@ FROM server as upgrade12to16
 RUN sed -i 's/$/ 12/' /etc/apt/sources.list.d/pgdg.list
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-		postgresql-12=12.19-1.pgdg110+1 \
+		postgresql-12=12.20-1.pgdg120+1 \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV PGBINOLD /usr/lib/postgresql/12/bin
