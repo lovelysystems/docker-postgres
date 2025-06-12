@@ -1,5 +1,10 @@
 # Changes for docker-postgres
 
+## unreleased
+
+- upgrade postgres to 14.18
+- multiplatform build with updated apgdiff
+
 ## 2023-08-23 / 14.9.0
 
 ### Feature

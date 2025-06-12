@@ -1,10 +1,10 @@
-FROM postgres:14.9-bullseye as base
+FROM postgres:14.18-bullseye as base
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="14.9-1.pgdg110+1"
+ENV PG_APT_VERSION="14.18-1.pgdg110+1"
 
 FROM base as extension_builder
 RUN apt-get update
@@ -49,7 +49,7 @@ FROM server as client
 RUN apt-get update && apt-get install -y --no-install-recommends less && apt-get clean
 
 # get apgdiff tool to allow to diff the vanilla schema against target databases
-COPY --from=lovelysystems/apgdiff:0.0.2 /usr/local/bin/apgdiff /usr/local/bin/
+COPY --from=lovelysystems/apgdiff:1.0.2 /usr/local/bin/apgdiff /usr/local/bin/
 
 WORKDIR /app/
 COPY psqlrc /root/.psqlrc
@@ -79,8 +79,7 @@ CMD ["psql"]
 FROM server as upgrade12
 RUN sed -i 's/$/ 12/' /etc/apt/sources.list.d/pgdg.list
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		postgresql-12=12.16-1.pgdg110+1 \
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-12  \
 	&& rm -rf /var/lib/apt/lists/*
 
 ENV PGBINOLD /usr/lib/postgresql/12/bin
