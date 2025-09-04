@@ -9,7 +9,7 @@
 
 ### Development
 
-- update to gradle 8.13 and lovely plugin 1.16.0
+- update to gradle 8.14 and lovely plugin 1.16.0
 
 ## 2024-06-25 / 16.3.2
 
