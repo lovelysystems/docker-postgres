@@ -21,7 +21,7 @@ services:
 #      - "./volumes/postgres/data:/var/lib/postgresql/data"
 
       # bind mount the restore volume
-      # uncomment fore restore
+      # uncomment for restore
       - "./volumes/pg_restore/data:/var/lib/postgresql/data"
 
       # map the bootstrap file into the init folder
