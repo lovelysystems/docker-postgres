@@ -1,1 +1,1 @@
-include(":examples:pg_devsetup", ":examples:upgrading")
+include(":examples:pg_devsetup")
