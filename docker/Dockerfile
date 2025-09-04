@@ -1,10 +1,10 @@
-FROM postgres:16.3-bullseye as base
+FROM postgres:17.5-bullseye as base
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="16.3-1.pgdg110+1"
+ENV PG_APT_VERSION="17.6-1.pgdg11+1"
 
 FROM base as extension_builder
 RUN apt-get update
@@ -19,12 +19,12 @@ RUN mkdir /tmp/python-libs && \
 FROM base as server
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-16-pldebugger postgresql-plpython3-16=$PG_APT_VERSION barman-cli-cloud && \
+    postgresql-17-pldebugger postgresql-plpython3-17=$PG_APT_VERSION barman-cli-cloud && \
     apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
 RUN cd /usr/lib/python3.9 && tar -zxvf /python-libs.tgz
-RUN echo "host replication replication all scram-sha-256" >> /usr/share/postgresql/16/pg_hba.conf.sample
+RUN echo "host replication replication all scram-sha-256" >> /usr/share/postgresql/17/pg_hba.conf.sample
 
 FROM server as backup
 COPY --from=lovelysystems/adminbox:0.4.2 /usr/bin/notify_if_fails /usr/bin/slack /usr/bin/
