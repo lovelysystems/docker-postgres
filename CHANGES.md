@@ -4,8 +4,8 @@
 
 ### Feature
 
+- upgrade postgres to version 17
 - remove image stage `upgrade12to16` for new builds
-
 
 ### Development
 
