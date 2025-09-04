@@ -1,4 +1,4 @@
-FROM postgres:17.5-bullseye as base
+FROM postgres:17.5-bullseye AS base
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
@@ -6,7 +6,7 @@ FROM postgres:17.5-bullseye as base
 # the debian distribution
 ENV PG_APT_VERSION="17.6-1.pgdg11+1"
 
-FROM base as extension_builder
+FROM base AS extension_builder
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends build-essential curl python3-pip && apt-get clean
 
@@ -16,7 +16,7 @@ RUN mkdir /tmp/python-libs && \
     cd /tmp/python-libs && tar -czvf /python-libs.tgz . && \
     rm -rf /tmp/python-libs
 
-FROM base as server
+FROM base AS server
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-17-pldebugger postgresql-plpython3-17=$PG_APT_VERSION barman-cli-cloud && \
@@ -26,7 +26,7 @@ COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
 RUN cd /usr/lib/python3.9 && tar -zxvf /python-libs.tgz
 RUN echo "host replication replication all scram-sha-256" >> /usr/share/postgresql/17/pg_hba.conf.sample
 
-FROM server as backup
+FROM server AS backup
 COPY --from=lovelysystems/adminbox:0.4.2 /usr/bin/notify_if_fails /usr/bin/slack /usr/bin/
 
 RUN apt-get update && \
@@ -44,7 +44,7 @@ COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["cron", "-f"]
 
-FROM server as client
+FROM server AS client
 
 RUN apt-get update && apt-get install -y --no-install-recommends less && apt-get clean
 
