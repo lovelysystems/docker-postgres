@@ -1,12 +1,12 @@
-FROM postgres:16.3-bullseye as base
+FROM postgres:17.5-bullseye AS base
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="16.3-1.pgdg110+1"
+ENV PG_APT_VERSION="17.6-1.pgdg11+1"
 
-FROM base as extension_builder
+FROM base AS extension_builder
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends build-essential curl python3-pip && apt-get clean
 
@@ -16,17 +16,17 @@ RUN mkdir /tmp/python-libs && \
     cd /tmp/python-libs && tar -czvf /python-libs.tgz . && \
     rm -rf /tmp/python-libs
 
-FROM base as server
+FROM base AS server
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-16-pldebugger postgresql-plpython3-16=$PG_APT_VERSION barman-cli-cloud && \
+    postgresql-17-pldebugger postgresql-plpython3-17=$PG_APT_VERSION barman-cli-cloud && \
     apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
 RUN cd /usr/lib/python3.9 && tar -zxvf /python-libs.tgz
-RUN echo "host replication replication all scram-sha-256" >> /usr/share/postgresql/16/pg_hba.conf.sample
+RUN echo "host replication replication all scram-sha-256" >> /usr/share/postgresql/17/pg_hba.conf.sample
 
-FROM server as backup
+FROM server AS backup
 COPY --from=lovelysystems/adminbox:0.4.2 /usr/bin/notify_if_fails /usr/bin/slack /usr/bin/
 
 RUN apt-get update && \
@@ -44,7 +44,7 @@ COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["cron", "-f"]
 
-FROM server as client
+FROM server AS client
 
 RUN apt-get update && apt-get install -y --no-install-recommends less && apt-get clean
 
@@ -73,32 +73,5 @@ ENV SCHEMA_DIR=/app/schema
 # override the entry point since we do not want to boostrap a server
 ENTRYPOINT []
 CMD ["psql"]
-
-# Stage to upgrade to this version from 12.x releases
-# taken from https://github.com/tianon/docker-postgres-upgrade/blob/master/12-to-16/Dockerfile
-FROM server as upgrade12to16
-RUN sed -i 's/$/ 12/' /etc/apt/sources.list.d/pgdg.list
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		postgresql-12=12.19-1.pgdg110+1 \
-	&& rm -rf /var/lib/apt/lists/*
-
-ENV PGBINOLD /usr/lib/postgresql/12/bin
-ENV PGBINNEW /usr/lib/postgresql/16/bin
-
-ENV PGDATAOLD /var/lib/postgresql/12/data
-ENV PGDATANEW /var/lib/postgresql/16/data
-
-RUN mkdir -p "$PGDATAOLD" "$PGDATANEW" \
-	&& chown -R postgres:postgres /var/lib/postgresql
-
-WORKDIR /var/lib/postgresql
-
-COPY docker-upgrade /usr/local/bin/
-RUN chmod 755 /usr/local/bin/docker-upgrade
-
-ENTRYPOINT ["docker-upgrade"]
-
-CMD ["pg_upgrade"]
 
 FROM server

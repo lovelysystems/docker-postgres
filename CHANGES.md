@@ -1,5 +1,16 @@
 # Changes for docker-postgres
 
+## Unreleased
+
+### Feature
+
+- upgrade postgres to version 17
+- remove image stage `upgrade12to16` for new builds
+
+### Development
+
+- update to gradle 8.14 and lovely plugin 1.16.0
+
 ## 2024-06-25 / 16.3.2
 
 - bump apgdiff to 1.0.2 to make diffing actually work with pg 15+
