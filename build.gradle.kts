@@ -6,7 +6,7 @@ lovely {
     gitProject()
     dockerProject(
         "lovelysystems/docker-postgres",
-        stages = listOf("", "backup", "client", "upgrade12to16"),
+        stages = listOf("", "backup", "client"),
     ) {
         from("docker")
     }

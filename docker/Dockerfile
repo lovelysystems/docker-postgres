@@ -74,31 +74,4 @@ ENV SCHEMA_DIR=/app/schema
 ENTRYPOINT []
 CMD ["psql"]
 
-# Stage to upgrade to this version from 12.x releases
-# taken from https://github.com/tianon/docker-postgres-upgrade/blob/master/12-to-16/Dockerfile
-FROM server as upgrade12to16
-RUN sed -i 's/$/ 12/' /etc/apt/sources.list.d/pgdg.list
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		postgresql-12=12.19-1.pgdg110+1 \
-	&& rm -rf /var/lib/apt/lists/*
-
-ENV PGBINOLD /usr/lib/postgresql/12/bin
-ENV PGBINNEW /usr/lib/postgresql/16/bin
-
-ENV PGDATAOLD /var/lib/postgresql/12/data
-ENV PGDATANEW /var/lib/postgresql/16/data
-
-RUN mkdir -p "$PGDATAOLD" "$PGDATANEW" \
-	&& chown -R postgres:postgres /var/lib/postgresql
-
-WORKDIR /var/lib/postgresql
-
-COPY docker-upgrade /usr/local/bin/
-RUN chmod 755 /usr/local/bin/docker-upgrade
-
-ENTRYPOINT ["docker-upgrade"]
-
-CMD ["pg_upgrade"]
-
 FROM server

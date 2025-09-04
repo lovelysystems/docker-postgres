@@ -1,5 +1,11 @@
 # Changes for docker-postgres
 
+## Unreleased
+
+### Feature
+
+- remove image stage `upgrade12to16` for new builds
+
 ## 2024-06-25 / 16.3.2
 
 - bump apgdiff to 1.0.2 to make diffing actually work with pg 15+
