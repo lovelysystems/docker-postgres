@@ -1,5 +1,11 @@
 # Changes for docker-postgres
 
+## Unreleased
+
+### Feature
+
+- upgrade to postgres 17.6-bookworm
+
 ## 2025-09-04 / 17.5.0
 
 ### Feature

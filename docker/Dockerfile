@@ -1,10 +1,10 @@
-FROM postgres:17.5-bullseye AS base
+FROM postgres:17.6-bookworm AS base
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="17.6-1.pgdg11+1"
+ENV PG_APT_VERSION="17.6-1.pgdg12+1"
 
 FROM base AS extension_builder
 RUN apt-get update
@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
-RUN cd /usr/lib/python3.9 && tar -zxvf /python-libs.tgz
+RUN cd /usr/lib/python3.11 && tar -zxvf /python-libs.tgz
 RUN echo "host replication replication all scram-sha-256" >> /usr/share/postgresql/17/pg_hba.conf.sample
 
 FROM server AS backup
