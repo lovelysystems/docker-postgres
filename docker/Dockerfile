@@ -1,6 +1,4 @@
-FROM postgres:17.6-bookworm AS base
-
-RUN usermod -u 26 postgres && groupmod -g 26 postgres
+FROM ghcr.io/cloudnative-pg/postgresql:17.6-202509151215-system-bookworm@sha256:ffb0f734c2cc77defa1ac6533a69a5cf9b8c73e9ed65500784a0febb620356db AS base
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
@@ -47,8 +45,6 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["cron", "-f"]
 
 FROM server AS client
-
-RUN usermod -u 26 postgres && groupmod -g 26 postgres
 
 RUN apt-get update && apt-get install -y --no-install-recommends less && apt-get clean
 
