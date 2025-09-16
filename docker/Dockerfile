@@ -1,5 +1,7 @@
 FROM postgres:17.6-bookworm AS base
 
+RUN usermod -u 26 postgres && groupmod -g 26 postgres
+
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
@@ -45,6 +47,8 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["cron", "-f"]
 
 FROM server AS client
+
+RUN usermod -u 26 postgres && groupmod -g 26 postgres
 
 RUN apt-get update && apt-get install -y --no-install-recommends less && apt-get clean
 
