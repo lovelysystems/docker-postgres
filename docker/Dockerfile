@@ -1,6 +1,7 @@
 FROM postgres:17.6-bookworm AS base
 
 USER root
+# cloudnative postgres images run with id 26 and the operator expects that uid (for in place major upgrades)
 RUN usermod -u 26 -g 26 postgres && \
     chown -R 26:26 /var/lib/postgresql /var/run/postgresql
 
