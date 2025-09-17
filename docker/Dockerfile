@@ -1,4 +1,8 @@
-FROM ghcr.io/cloudnative-pg/postgresql:17.6-202509151215-system-bookworm@sha256:ffb0f734c2cc77defa1ac6533a69a5cf9b8c73e9ed65500784a0febb620356db AS base
+FROM postgres:17.6-bookworm AS base
+
+USER root
+RUN usermod -u 26 -g 26 postgres && \
+    chown -R 26:26 /var/lib/postgresql /var/run/postgresql
 
 # postgres sub-package versions are  nailed here is to ensure we build dev against the same version as installed
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
@@ -15,6 +19,7 @@ RUN mkdir /tmp/python-libs && \
     pip3 install --target /tmp/python-libs --disable-pip-version-check --no-deps -r /tmp/requirements.txt && \
     cd /tmp/python-libs && tar -czvf /python-libs.tgz . && \
     rm -rf /tmp/python-libs
+USER postgres
 
 FROM base AS server
 
@@ -33,7 +38,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     cron jq curl barman barman-cli && \
     apt-get clean
-
+USER postgres
 COPY psqlrc /root/.psqlrc
 
 ENV PGHOST=${PGHOST:-127.0.0.1} \
@@ -63,6 +68,8 @@ COPY ./lib/ /usr/local/lib/.
 COPY ./bin/ /usr/local/bin/.
 RUN chmod 755  /usr/local/bin/*
 
+USER postgres
+
 # options to use with pg_dump, to dump the vanilla schema
 # the options to use for pg_dump, should be used to specify the database and optionally schemas
 ENV DIFFDB_DUMP_OPTIONS=${DIFFDB_DUMP_OPTIONS:-'-s -d postgres'}
@@ -75,3 +82,4 @@ ENTRYPOINT []
 CMD ["psql"]
 
 FROM server
+USER postgres
