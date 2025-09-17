@@ -1,5 +1,11 @@
 # Changes for docker-postgres
 
+## Unreleased
+
+### Feature
+
+- change to cloudnative-postgres base image
+
 ## 2025-09-05 / 17.6.0
 
 ### Feature
