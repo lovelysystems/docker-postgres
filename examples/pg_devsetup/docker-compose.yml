@@ -6,8 +6,24 @@ secrets:
 
 services:
 
+  postgres-init:
+    image: lovelysystems/docker-postgres:17.5.0
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - "./volumes/postgres/data:/var/lib/postgresql/data"
+      # map the bootstrap file into the init folder
+      # this will be evaluated in the created database upon first startup
+      - "./bootstrap.sql:/docker-entrypoint-initdb.d/bootstrap.sql:ro"
+      - "./init-postgres-data.sh:/init-postgres-data.sh:ro"
+    entrypoint: ["bash", "/init-postgres-data.sh"]
+    restart: "no"
+
   postgres:
     image: lovelysystems/docker-postgres:dev
+    depends_on:
+      postgres-init:
+        condition: service_completed_successfully
     ports:
       - "5432:5432"
     environment:
@@ -16,14 +32,9 @@ services:
       # bind mount the data volume
       - "./volumes/postgres/data:/var/lib/postgresql/data"
 
-      # map the bootstrap file into the init folder
-      # this will be evaluated in the created database upon first startup
-      - "./bootstrap.sql:/docker-entrypoint-initdb.d/bootstrap.sql:ro"
-
     # configure shared library preload for the debugger extension
-    command:
-      - '-c'
-      - 'shared_preload_libraries=plugin_debugger'
+      - "./init-cloudnative.sh:/init-cloudnative.sh:ro"
+    entrypoint: ["bash", "/init-cloudnative.sh"]
 
   # pgadmin listening on http://localhost:1080
   pgadmin:
