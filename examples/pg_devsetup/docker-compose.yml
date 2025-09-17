@@ -15,8 +15,8 @@ services:
       # map the bootstrap file into the init folder
       # this will be evaluated in the created database upon first startup
       - "./bootstrap.sql:/docker-entrypoint-initdb.d/bootstrap.sql:ro"
-      - "./init-postgres-data.sh:/init-postgres-data.sh:ro"
-    entrypoint: ["bash", "/init-postgres-data.sh"]
+      - "./stop-after-init.sh:/stop-after-init.sh:ro"
+    entrypoint: ["bash", "/stop-after-init.sh"]
     restart: "no"
 
   postgres:
