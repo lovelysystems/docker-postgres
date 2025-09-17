@@ -6,6 +6,8 @@ if [ "$(id -u)" = "0" ]; then
   exec gosu postgres "$BASH_SOURCE" "$@"
 fi
 
+mkdir -p /var/lib/postgresql/data
+
 docker-entrypoint.sh postgres &
 POSTGRES_PID=$!
 
