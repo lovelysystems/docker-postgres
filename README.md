@@ -3,7 +3,9 @@
 These images are derived from the [official postgres images](https://hub.docker.com/_/postgres) so
 all tweaks from this image are available.
 
-# Server Image
+# Server Image - deprecated
+
+**Note:** The server image should not be used directly. It is kept only for certain projects that still rely on the included extensions. For new projects, it is recommended to use the plain "postgres" images or the cloud-native postgres, for deployed clusters, images instead.
 
 Installed extensions:
 
@@ -37,7 +39,7 @@ See the [upgrade example](./examples/upgrading) for more information
 ## Schema location
 
 Put sql files under `/app/schema/sql`, the init script runs `/app/schema/sql/init.sql`
-using `/app/schema/sql`as orking directory.
+using `/app/schema/sql`as working directory.
 
 ## Initial creation of the Database
 
