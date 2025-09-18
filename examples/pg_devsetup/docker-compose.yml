@@ -7,17 +7,13 @@ secrets:
 services:
 
   postgres-init:
-    image: lovelysystems/docker-postgres:17.5.0
+    image: postgres:17
     environment:
-      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data
     volumes:
       - "./volumes/postgres/data:/var/lib/postgresql/data"
-      # map the bootstrap file into the init folder
-      # this will be evaluated in the created database upon first startup
-      - "./bootstrap.sql:/docker-entrypoint-initdb.d/bootstrap.sql:ro"
-      - "./stop-after-init.sh:/stop-after-init.sh:ro"
-    entrypoint: ["bash", "/stop-after-init.sh"]
-    restart: "no"
+      - "./pg-init.sh:/docker-entrypoint-initdb.d/pg-init.sh:ro"
+    entrypoint: [ "/bin/bash", "./docker-entrypoint-initdb.d/pg-init.sh" ]
 
   postgres:
     image: lovelysystems/docker-postgres:dev
