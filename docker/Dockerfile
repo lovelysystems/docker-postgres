@@ -4,7 +4,7 @@ FROM postgres:17.6-bookworm AS base
 # the postgres vesions on http://apt.postgresql.org/pub/repos/apt/ might have changed since the last build
 # if this version is not available anymore we need to use a different base image which btw might also change
 # the debian distribution
-ENV PG_APT_VERSION="17.6-1.pgdg12+1"
+ENV PG_APT_VERSION="17.6-2.pgdg12+1"
 
 FROM base AS extension_builder
 RUN apt-get update
