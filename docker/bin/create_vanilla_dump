@@ -65,4 +65,8 @@ docker_create_db_directories
 
 log "running run_dump.sh using init_script=$init_script and dumpfile=$dump_file"
 
-exec /usr/local/bin/run_dump.sh $dump_file $init_script
+if [ "$(id -u)" = "0" ]; then
+  exec gosu postgres /usr/local/bin/run_dump.sh $dump_file $init_script
+else
+  exec /usr/local/bin/run_dump.sh $dump_file $init_script
+fi
