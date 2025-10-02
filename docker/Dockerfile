@@ -19,7 +19,7 @@ RUN mkdir /tmp/python-libs && \
 FROM base AS server
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-17-pldebugger postgresql-plpython3-17=$PG_APT_VERSION barman-cli-cloud && \
+    postgresql-17-pldebugger postgresql-plpython3-17=$PG_APT_VERSION barman-cli-cloud gosu && \
     apt-get clean
 
 COPY --from=extension_builder /python-libs.tgz /python-libs.tgz
@@ -46,7 +46,7 @@ CMD ["cron", "-f"]
 
 FROM server AS client
 
-RUN apt-get update && apt-get install -y --no-install-recommends less && apt-get clean
+RUN apt-get update && apt-get install -y --no-install-recommends less gosu && apt-get clean
 
 # get apgdiff tool to allow to diff the vanilla schema against target databases
 COPY --from=lovelysystems/apgdiff:1.0.2 /usr/local/bin/apgdiff /usr/local/bin/
