@@ -1,5 +1,11 @@
 # Changes for docker-postgres
 
+## Unreleased
+
+### Fix
+
+- update to apgdiff 1.0.3
+
 ## 2025-09-05 / 17.6.0
 
 ### Feature
