@@ -49,7 +49,7 @@ FROM server AS client
 RUN apt-get update && apt-get install -y --no-install-recommends less gosu && apt-get clean
 
 # get apgdiff tool to allow to diff the vanilla schema against target databases
-COPY --from=lovelysystems/apgdiff:1.0.2 /usr/local/bin/apgdiff /usr/local/bin/
+COPY --from=lovelysystems/apgdiff:1.0.2-6-g05be0df /usr/local/bin/apgdiff /usr/local/bin/
 
 WORKDIR /app/
 COPY psqlrc /root/.psqlrc
