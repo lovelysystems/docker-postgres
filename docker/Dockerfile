@@ -27,7 +27,7 @@ RUN cd /usr/lib/python3.11 && tar -zxvf /python-libs.tgz
 RUN echo "host replication replication all scram-sha-256" >> /usr/share/postgresql/17/pg_hba.conf.sample
 
 FROM server AS backup
-COPY --from=lovelysystems/adminbox:0.4.2 /usr/bin/notify_if_fails /usr/bin/slack /usr/bin/
+COPY --from=ghcr.io/lovelysystems/adminbox:0.4.2 /usr/bin/notify_if_fails /usr/bin/slack /usr/bin/
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -49,7 +49,7 @@ FROM server AS client
 RUN apt-get update && apt-get install -y --no-install-recommends less gosu && apt-get clean
 
 # get apgdiff tool to allow to diff the vanilla schema against target databases
-COPY --from=lovelysystems/apgdiff:1.0.3 /usr/local/bin/apgdiff /usr/local/bin/
+COPY --from=ghcr.io/lovelysystems/apgdiff:1.0.3 /usr/local/bin/apgdiff /usr/local/bin/
 
 WORKDIR /app/
 COPY psqlrc /root/.psqlrc

@@ -7,7 +7,7 @@ secrets:
 services:
 
   postgres:
-    image: lovelysystems/docker-postgres:dev
+    image: ghcr.io/lovelysystems/docker-postgres:dev
     ports:
       - "5432:5432"
     environment:
@@ -47,7 +47,7 @@ services:
       - "1080:80"
 
   client:
-    image: lovelysystems/docker-postgres:dev-client
+    image: ghcr.io/lovelysystems/docker-postgres:dev-client
     profiles:
       - manual
     environment:
